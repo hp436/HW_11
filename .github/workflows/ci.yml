@@ -34,7 +34,8 @@ jobs:
         echo "PYTHONPATH=${{ github.workspace }}" >> $GITHUB_ENV
 
     - name: Start PostgreSQL service
-      uses: harmon758/postgresql-action@v2.0.1
+      uses: harmon758/postgresql-action@v1
+
       with:
         postgresql version: '15'
         postgresql db: testdb
