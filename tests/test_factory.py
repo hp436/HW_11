@@ -1,11 +1,10 @@
 """
-Factory Tests - Fixed for your structure
+Factory Tests - Only 12 Tests (No Database)
 """
 import pytest
 import sys
 import os
 
-# Add parent directory to path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from app.services.factory import (
@@ -110,3 +109,6 @@ def test_negative_numbers():
     assert perform_calculation(-10, -5, "Subtract") == -5
     assert perform_calculation(-10, -5, "Multiply") == 50
     assert perform_calculation(-10, -5, "Divide") == 2
+
+
+# END OF FILE - NO MORE TESTS BELOW THIS LINE!
