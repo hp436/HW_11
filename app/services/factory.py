@@ -1,38 +1,99 @@
-class BaseOperation:
-    def compute(self, a, b):
-        raise NotImplementedError
+"""
+Calculation Factory Pattern Implementation
+"""
+from abc import ABC, abstractmethod
+from typing import Dict, Type
 
 
-class AddOperation(BaseOperation):
-    def compute(self, a, b):
+class CalculationStrategy(ABC):
+    """Abstract base class for calculation strategies"""
+    
+    @abstractmethod
+    def calculate(self, a: float, b: float) -> float:
+        """Perform the calculation"""
+        pass
+    
+    @abstractmethod
+    def get_type(self) -> str:
+        """Return the calculation type name"""
+        pass
+
+
+class AddCalculation(CalculationStrategy):
+    """Addition calculation strategy"""
+    
+    def calculate(self, a: float, b: float) -> float:
         return a + b
+    
+    def get_type(self) -> str:
+        return "Add"
 
 
-class SubOperation(BaseOperation):
-    def compute(self, a, b):
+class SubtractCalculation(CalculationStrategy):
+    """Subtraction calculation strategy"""
+    
+    def calculate(self, a: float, b: float) -> float:
         return a - b
+    
+    def get_type(self) -> str:
+        return "Subtract"
 
 
-class MultiplyOperation(BaseOperation):
-    def compute(self, a, b):
+class MultiplyCalculation(CalculationStrategy):
+    """Multiplication calculation strategy"""
+    
+    def calculate(self, a: float, b: float) -> float:
         return a * b
+    
+    def get_type(self) -> str:
+        return "Multiply"
 
 
-class DivideOperation(BaseOperation):
-    def compute(self, a, b):
+class DivideCalculation(CalculationStrategy):
+    """Division calculation strategy"""
+    
+    def calculate(self, a: float, b: float) -> float:
+        if b == 0:
+            raise ValueError("Division by zero is not allowed")
         return a / b
+    
+    def get_type(self) -> str:
+        return "Divide"
 
 
-class OperationFactory:
-    @staticmethod
-    def get_operation(operation_type: str):
-        ops = {
-            "Add": AddOperation(),
-            "Sub": SubOperation(),
-            "Multiply": MultiplyOperation(),
-            "Divide": DivideOperation(),
-        }
-        if operation_type not in ops:
-            raise ValueError("Invalid operation type")
-        return ops[operation_type]
+class CalculationFactory:
+    """Factory class for creating calculation strategies"""
+    
+    _strategies: Dict[str, Type[CalculationStrategy]] = {
+        "Add": AddCalculation,
+        "Subtract": SubtractCalculation,
+        "Multiply": MultiplyCalculation,
+        "Divide": DivideCalculation,
+    }
+    
+    @classmethod
+    def create_calculation(cls, calculation_type: str) -> CalculationStrategy:
+        """Create and return a calculation strategy based on the type"""
+        strategy_class = cls._strategies.get(calculation_type)
+        if strategy_class is None:
+            raise ValueError(
+                f"Invalid calculation type: {calculation_type}. "
+                f"Supported types: {', '.join(cls._strategies.keys())}"
+            )
+        return strategy_class()
+    
+    @classmethod
+    def register_strategy(cls, calculation_type: str, strategy_class: Type[CalculationStrategy]):
+        """Register a new calculation strategy"""
+        cls._strategies[calculation_type] = strategy_class
+    
+    @classmethod
+    def get_supported_types(cls) -> list:
+        """Return list of supported calculation types"""
+        return list(cls._strategies.keys())
 
+
+def perform_calculation(a: float, b: float, calculation_type: str) -> float:
+    """Convenience function to perform a calculation"""
+    strategy = CalculationFactory.create_calculation(calculation_type)
+    return strategy.calculate(a, b)
